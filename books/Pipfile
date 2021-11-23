@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 django-createuser = "*"
 django-filter = "*"
+social-auth-app-django = "*"
 
 [dev-packages]
 
