@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-2q802%we18o4o*uxhx*&1^0lwuex#66#ta3s9pm7h4_@@fe2-b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['kubernetes.docker.internal', '127.0.0.1']
 
 # Application definition
 
@@ -141,7 +141,10 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
-    )
+    )#,
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.TokenAuthentication',
+    # ]
 }
 
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
