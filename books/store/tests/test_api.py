@@ -83,3 +83,22 @@ class BooksApiTestCase(APITestCase):
         self.book_1.refresh_from_db() # Використовується в основному при тестах, коли слід одразу витягти з БД попередньо змінений об'єкт.
         self.assertEqual(456, self.book_1.price)
 
+    def test_del(self):
+
+        url = reverse('book-detail', args=(self.book_2.id,)) #'book-detail' - створює url, який має ID
+        self.client.force_login(self.user) #логінація юзера
+        response = self.client.delete(url, content_type = 'application/json')
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+        # self.book_2.refresh_from_db() # Використовується в основному при тестах, коли слід одразу витягти з БД попередньо змінений об'єкт.
+        self.assertEqual(2, Book.objects.all().count())
+
+    def test_get_by_id(self):
+
+        url = reverse('book-detail', args=(self.book_3.id,)) #'book-detail' - створює url, який має ID
+        self.client.force_login(self.user) #логінація юзера
+        response = self.client.get(url)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(3, self.book_3.id)
+        self.assertEqual('Test book 3 Author 1', self.book_3.name)
+
