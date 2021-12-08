@@ -13,9 +13,9 @@ from store.serializer import BooksSerializer
 class BooksApiTestCase(APITestCase):
     def setUp(self):  # дана функція буде запускатися перед кожним тестом
         self.user = User.objects.create(username='test_username') # створення користувача
-        self.book_1 = Book.objects.create(name='Test book 1', price='120.3', author_name='Author 1')
-        self.book_2 = Book.objects.create(name='Test book 2', price='400', author_name='Author 2')
-        self.book_3 = Book.objects.create(name='Test book 3 Author 1', price='320.3', author_name='Author 3')
+        self.book_1 = Book.objects.create(name='Test book 1', price='120.3', author_name='Author 1', owner=self.user)
+        self.book_2 = Book.objects.create(name='Test book 2', price='400', author_name='Author 2', owner=self.user)
+        self.book_3 = Book.objects.create(name='Test book 3 Author 1', price='320.3', author_name='Author 3', owner=self.user)
 
     def test_get(self):
 
@@ -66,6 +66,7 @@ class BooksApiTestCase(APITestCase):
 
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         self.assertEqual(4, Book.objects.all().count())
+        self.assertEqual(self.user, Book.objects.last().owner)
 
     def test_update(self):
 
@@ -97,8 +98,10 @@ class BooksApiTestCase(APITestCase):
         url = reverse('book-detail', args=(self.book_3.id,)) #'book-detail' - створює url, який має ID
         self.client.force_login(self.user) #логінація юзера
         response = self.client.get(url)
+        print(self.book_3.id)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(3, self.book_3.id)
         self.assertEqual('Test book 3 Author 1', self.book_3.name)
+
 
