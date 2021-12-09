@@ -12,13 +12,13 @@ from store.serializer import BooksSerializer
 
 class BooksApiTestCase(APITestCase):
     def setUp(self):  # дана функція буде запускатися перед кожним тестом
-        self.user = User.objects.create(username='test_username') # створення користувача
+        self.user = User.objects.create(username='test_username')  # створення користувача
         self.book_1 = Book.objects.create(name='Test book 1', price='120.3', author_name='Author 1', owner=self.user)
         self.book_2 = Book.objects.create(name='Test book 2', price='400', author_name='Author 2', owner=self.user)
-        self.book_3 = Book.objects.create(name='Test book 3 Author 1', price='320.3', author_name='Author 3', owner=self.user)
+        self.book_3 = Book.objects.create(name='Test book 3 Author 1', price='320.3', author_name='Author 3',
+                                          owner=self.user)
 
     def test_get(self):
-
         url = reverse('book-list')
         # print(url)
         response = self.client.get(url)
@@ -61,47 +61,41 @@ class BooksApiTestCase(APITestCase):
             "author_name": "DC"
         }
         json_data = json.dumps(data)
-        self.client.force_login(self.user) #логінація юзера
-        response = self.client.post(url, data = json_data, content_type = 'application/json')
+        self.client.force_login(self.user)  # логінація юзера
+        response = self.client.post(url, data=json_data, content_type='application/json')
 
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         self.assertEqual(4, Book.objects.all().count())
         self.assertEqual(self.user, Book.objects.last().owner)
 
     def test_update(self):
-
-        url = reverse('book-detail', args=(self.book_1.id,)) #'book-detail' - створює url, який має ID
+        url = reverse('book-detail', args=(self.book_1.id,))  # 'book-detail' - створює url, який має ID
         data = {
             "name": self.book_1.name,
             "price": 456,
             "author_name": self.book_1.author_name
         }
         json_data = json.dumps(data)
-        self.client.force_login(self.user) #логінація юзера
-        response = self.client.put(url, data = json_data, content_type = 'application/json')
+        self.client.force_login(self.user)  # логінація юзера
+        response = self.client.put(url, data=json_data, content_type='application/json')
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.book_1.refresh_from_db() # Використовується в основному при тестах, коли слід одразу витягти з БД попередньо змінений об'єкт.
+        self.book_1.refresh_from_db()  # Використовується в основному при тестах, коли слід одразу витягти з БД попередньо змінений об'єкт.
         self.assertEqual(456, self.book_1.price)
 
     def test_del(self):
-
-        url = reverse('book-detail', args=(self.book_2.id,)) #'book-detail' - створює url, який має ID
-        self.client.force_login(self.user) #логінація юзера
-        response = self.client.delete(url, content_type = 'application/json')
+        url = reverse('book-detail', args=(self.book_2.id,))  # 'book-detail' - створює url, який має ID
+        self.client.force_login(self.user)  # логінація юзера
+        response = self.client.delete(url, content_type='application/json')
         self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
         # self.book_2.refresh_from_db() # Використовується в основному при тестах, коли слід одразу витягти з БД попередньо змінений об'єкт.
         self.assertEqual(2, Book.objects.all().count())
 
     def test_get_by_id(self):
-
-        url = reverse('book-detail', args=(self.book_3.id,)) #'book-detail' - створює url, який має ID
-        self.client.force_login(self.user) #логінація юзера
+        url = reverse('book-detail', args=(self.book_3.id,))  # 'book-detail' - створює url, який має ID
+        self.client.force_login(self.user)  # логінація юзера
         response = self.client.get(url)
-        print(self.book_3.id)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.assertEqual(3, self.book_3.id)
+        self.assertEqual('320.3', self.book_3.price)
         self.assertEqual('Test book 3 Author 1', self.book_3.name)
-
-
