@@ -2,12 +2,12 @@ import django_filters.rest_framework
 from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+# from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django.shortcuts import render
 
 from .serializer import BooksSerializer
 from .models import Book
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrStaffOrReadOnly
 
 
 class BookViewSet(ModelViewSet):
@@ -16,7 +16,7 @@ class BookViewSet(ModelViewSet):
     # Додаємо фільтер
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     # permission_classes = [IsAuthenticated] # тільки авторизовані користувачі зможуть переглядати список книг
-    permission_classes = [IsOwnerOrReadOnly] #переглядати список зможуть всі користувачі, в т.ч. незалогінені
+    permission_classes = [IsOwnerOrStaffOrReadOnly] #переглядати список зможуть всі користувачі, в т.ч. незалогінені
     filter_fields = ['price'] #визначаємо поля фільтру, по яким будемо фільтрувати
     search_fields = ['name', 'author_name'] # пошук має відбуватися в двох і більше полях, бо для одного поля достатньо фільтра
     ordering_fields = ['price', 'author_name']
